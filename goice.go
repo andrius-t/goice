@@ -23,14 +23,12 @@ func main() {
 					Quote  string `db:"quote" json:"quote"`
 					Author string `db:"author" json:"author"`
 				}{}
-
 				queryErr := app.Dao().DB().
-					NewQuery("SELECT quote, author FROM quotes ORDER BY RAND() LIMIT 1").
+					NewQuery("SELECT quote, author FROM quotes ORDER BY RANDOM() LIMIT 1").
 					One(&result)
 				if queryErr != nil {
 					return rest.NewBadRequestError("Failed to fetch.", queryErr)
 				}
-
 				return c.JSON(200, result)
 			},
 			Name: "",
