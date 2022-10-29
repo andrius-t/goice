@@ -1,6 +1,7 @@
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 jobs:
   release-linux-amd64:
@@ -13,3 +14,5 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: linux
         goarch: amd64
+        release_tag: goice
+        overwrite: true
