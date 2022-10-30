@@ -18,6 +18,7 @@ var allowValuesMap map[string]struct{} = map[string]struct{}{
 	"never":    {},
 	"paranoia": {},
 	"draw":     {},
+	"invent":   {},
 }
 
 func main() {
