@@ -59,6 +59,10 @@ func main() {
 					return rest.NewBadRequestError("Invalid table.", nil)
 				}
 
+				// var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
+				// if !onlyLetters(table) {
+				// 	return rest.NewBadRequestError("Invalid table.", nil)
+				// }
 				fmt.Printf("Table: %v", table)
 				queryErr := app.Dao().DB().
 					NewQuery(fmt.Sprintf("SELECT action FROM %s WHERE enabled = True ORDER BY RANDOM() LIMIT 1", table)).
