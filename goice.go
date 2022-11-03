@@ -4,22 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/rest"
 )
-
-var allowValuesMap map[string]struct{} = map[string]struct{}{
-	"wyr":      {},
-	"truth":    {},
-	"dare":     {},
-	"never":    {},
-	"paranoia": {},
-	"draw":     {},
-	"invent":   {},
-}
 
 func main() {
 	app := pocketbase.New()
@@ -54,15 +45,10 @@ func main() {
 					Action string `db:"action" json:"action"`
 				}{}
 
-				_, ok := allowValuesMap[table]
-				if !ok {
+				var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
+				if !onlyLetters(table) {
 					return rest.NewBadRequestError("Invalid table.", nil)
 				}
-
-				// var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
-				// if !onlyLetters(table) {
-				// 	return rest.NewBadRequestError("Invalid table.", nil)
-				// }
 				fmt.Printf("Table: %v", table)
 				queryErr := app.Dao().DB().
 					NewQuery(fmt.Sprintf("SELECT action FROM %s WHERE enabled = True ORDER BY RANDOM() LIMIT 1", table)).
