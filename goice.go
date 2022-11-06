@@ -12,6 +12,11 @@ import (
 	"github.com/pocketbase/pocketbase/tools/rest"
 )
 
+type Result struct {
+	Id     string `db:"id" json:"id"`
+	Action string `db:"action" json:"action"`
+}
+
 func main() {
 	app := pocketbase.New()
 
@@ -53,6 +58,29 @@ func main() {
 				queryErr := app.Dao().DB().
 					NewQuery(fmt.Sprintf("SELECT action FROM %s WHERE enabled = True ORDER BY RANDOM() LIMIT 1", table)).
 					One(&result)
+				if queryErr != nil {
+					return rest.NewBadRequestError("Failed to fetch.", queryErr)
+				}
+				return c.JSON(200, result)
+			},
+			Name: "",
+		})
+		e.Router.AddRoute(echo.Route{
+			Method: http.MethodGet,
+			Path:   "/api/actions",
+			Handler: func(c echo.Context) error {
+				table := c.FormValue("table")
+				result := []Result{}
+
+				var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
+				if !onlyLetters(table) {
+					return rest.NewBadRequestError("Invalid table.", nil)
+				}
+				fmt.Printf("Table: %v", table)
+				queryErr := app.Dao().DB().
+					NewQuery(fmt.Sprintf("SELECT action, id FROM %s WHERE enabled = True ORDER BY RANDOM() LIMIT 5", table)).
+					All(&result)
+
 				if queryErr != nil {
 					return rest.NewBadRequestError("Failed to fetch.", queryErr)
 				}
