@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/rest"
+	"github.com/pocketbase/pocketbase/apis"
 )
 
 type Result struct {
@@ -34,7 +34,7 @@ func main() {
 					NewQuery("SELECT quote, author FROM quotes ORDER BY RANDOM() LIMIT 1").
 					One(&result)
 				if queryErr != nil {
-					return rest.NewBadRequestError("Failed to fetch.", queryErr)
+					return apis.NewBadRequestError("Failed to fetch.", queryErr)
 				}
 				return c.JSON(200, result)
 			},
@@ -52,14 +52,14 @@ func main() {
 
 				var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
 				if !onlyLetters(table) {
-					return rest.NewBadRequestError("Invalid table.", nil)
+					return apis.NewBadRequestError("Invalid table.", nil)
 				}
 				fmt.Printf("Table: %v", table)
 				queryErr := app.Dao().DB().
 					NewQuery(fmt.Sprintf("SELECT action FROM %s WHERE enabled = True ORDER BY RANDOM() LIMIT 1", table)).
 					One(&result)
 				if queryErr != nil {
-					return rest.NewBadRequestError("Failed to fetch.", queryErr)
+					return apis.NewBadRequestError("Failed to fetch.", queryErr)
 				}
 				return c.JSON(200, result)
 			},
@@ -74,7 +74,7 @@ func main() {
 
 				var onlyLetters = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
 				if !onlyLetters(table) {
-					return rest.NewBadRequestError("Invalid table.", nil)
+					return apis.NewBadRequestError("Invalid table.", nil)
 				}
 				fmt.Printf("Table: %v", table)
 				queryErr := app.Dao().DB().
@@ -82,7 +82,7 @@ func main() {
 					All(&result)
 
 				if queryErr != nil {
-					return rest.NewBadRequestError("Failed to fetch.", queryErr)
+					return apis.NewBadRequestError("Failed to fetch.", queryErr)
 				}
 				return c.JSON(200, result)
 			},
